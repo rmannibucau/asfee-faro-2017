@@ -15,9 +15,8 @@ public class KickoffConfigurationSource implements ConfigSource {
 
     public KickoffConfigurationSource() {
         final Properties loader = new Properties();
-        try (final InputStream stream = Thread.currentThread()
-                                              .getContextClassLoader()
-                                              .getResourceAsStream("META-INF/kickoff.properties")) {
+        try (final InputStream stream = Thread.currentThread().getContextClassLoader()
+                              .getResourceAsStream("META-INF/kickoff.properties")) {
             if (stream != null) {
                 loader.load(stream);
             }

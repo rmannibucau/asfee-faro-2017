@@ -6,9 +6,11 @@ import javax.enterprise.context.ContextNotActiveException;
 import javax.enterprise.context.RequestScoped;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.apache.deltaspike.cdise.api.ContextControl;
 
+@Named
 @ApplicationScoped
 public class ScopeActivator implements ChunkListener {
     @Inject

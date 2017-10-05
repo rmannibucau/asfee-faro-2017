@@ -20,6 +20,7 @@ Then expose the data through a list endpoint (paginated) and a `findBySymbol` on
 
 = Tips
 
+- Once you selected the server you want, ensure its profile is the default (meecrowave is active by default but not tomee)
 - For the HTTP clients use JAX-RS `Client`
 - For the batch you can do a simple `chunk` (read symbols -> convert them in symbol/price pairs -> persist them)
 - For Meecrowave/JPA integration either use `meecrowave-jpa` or `deltaspike-jpa`
@@ -33,4 +34,27 @@ Then expose the data through a list endpoint (paginated) and a `findBySymbol` on
 - Zipkin
 - Swagger
 - JAX-RS-Analyzer
+- Use Arquillian adapters for tests
 - ...
+
+
+= Use the solution
+
+== Meecrowave
+
+[source,sh]
+----
+$ mvn clean install meecrowave:bake
+----
+
+Then go on http://localhost:8080/api/quote/provisioning to integrate some data and http://localhost:8080/api/quote to see them
+
+
+== TomEE
+
+[source,sh]
+----
+$ mvn clean install tomee-embedded:run
+----
+
+Then go on http://localhost:8080/api/quote/provisioning to integrate some data and http://localhost:8080/api/quote to see them

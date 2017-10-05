@@ -9,33 +9,30 @@ import static org.junit.rules.RuleChain.outerRule;
 import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 
-import org.apache.meecrowave.Meecrowave;
-import org.apache.meecrowave.junit.MonoMeecrowave;
-import org.apache.meecrowave.testing.ConfigurationInject;
+import org.apache.openejb.testing.Application;
+import org.apache.tomee.embedded.junit.TomEEEmbeddedSingleRunner;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
 import org.talend.kickoff.faro2017.front.model.QuoteModel;
 import org.talend.kickoff.faro2017.front.model.QuotePage;
-import org.talend.kickoff.faro2017.test.InjectorRule;
+import org.talend.kickoff.faro2017.test.KickoffApp;
 import org.talend.kickoff.faro2017.test.VolatileProvisioning;
 
-@RunWith(MonoMeecrowave.Runner.class)
 public class QuoteResourceTest {
-    private final MonoMeecrowave.Rule meecrowave = new MonoMeecrowave.Rule();
-
     @Rule
-    public final TestRule injector = outerRule(meecrowave)
-            .around(new InjectorRule(this))
+    public final TestRule provisioning = outerRule(new TomEEEmbeddedSingleRunner.Rule(this))
             .around(new VolatileProvisioning());
 
     @Inject
     private Client client;
 
+    @Application
+    private KickoffApp app;
+
     @Test
     public void findPage() {
-        final QuotePage page = client.target("http://localhost:" + meecrowave.getConfiguration().getHttpPort())
+        final QuotePage page = client.target("http://localhost:" + app.getPort())
               .path("api/quote")
               .queryParam("from", 4)
               .queryParam("to", 9)
@@ -49,7 +46,7 @@ public class QuoteResourceTest {
 
     @Test
     public void findQuote() {
-        assertEquals(41.94, client.target("http://localhost:" + meecrowave.getConfiguration().getHttpPort())
+        assertEquals(41.94, client.target("http://localhost:" + app.getPort())
                                 .path("api/quote/{symbol}")
                                 .resolveTemplate("symbol", "TLND")
                                 .request(APPLICATION_JSON_TYPE)

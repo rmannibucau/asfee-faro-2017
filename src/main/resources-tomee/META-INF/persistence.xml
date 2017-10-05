@@ -9,5 +9,9 @@
     <jta-data-source>jdbc/kickoff</jta-data-source>
     <class>org.talend.kickoff.faro2017.service.model.Quote</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="openjpa.jdbc.SynchronizeMappings" value="buildSchema(ForeignKeys=true)"/>
+      <property name="openjpa.jdbc.DBDictionary" value="(DoubleTypeName=DOUBLE)"/>
+    </properties>
   </persistence-unit>
 </persistence>

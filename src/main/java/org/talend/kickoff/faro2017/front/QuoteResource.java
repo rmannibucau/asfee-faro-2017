@@ -3,8 +3,11 @@ package org.talend.kickoff.faro2017.front;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static javax.ws.rs.core.MediaType.TEXT_PLAIN;
 
+import java.util.Properties;
 import java.util.function.Function;
+import javax.batch.operations.JobOperator;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
@@ -30,6 +33,9 @@ import org.talend.kickoff.faro2017.service.model.Quote;
 public class QuoteResource {
     @Inject // use deltaspike-data if you want to have more fun but doubt you'll get time in 1h ;)
     private EntityManager em;
+
+    @Inject
+    private JobOperator jobOperator;
 
     private final Function<Quote, QuoteModel> mapper = quote -> new QuoteModel(quote.getSymbol(), quote.getPrice());
 
@@ -57,5 +63,12 @@ public class QuoteResource {
         return ofNullable(em.find(Quote.class, symbol))
                 .map(mapper)
                 .orElseThrow(() -> new NotFoundException(symbol + " not found"));
+    }
+
+    @GET
+    @Path("provisining")
+    @Produces(TEXT_PLAIN)
+    public long provision() {
+        return jobOperator.start("quote", new Properties());
     }
 }

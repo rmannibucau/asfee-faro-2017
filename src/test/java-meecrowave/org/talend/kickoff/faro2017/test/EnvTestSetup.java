@@ -19,9 +19,6 @@ public class EnvTestSetup implements Meecrowave.InstanceCustomizer {
         // clean up startup logs
         setProperty("org.apache.batchee.init.verbose", "false");
 
-        // we handle it in tests to control the database state to avoid to do it at startup
-        setProperty("provisioning.skip", "true");
-
         // we redirect remote calls to local resources to ensure it runs whatever network state is available
         final int port = tomcat.getConnector().getPort();
         setProperty("cboe.symbols.url", "http://localhost:" + port + "/publish/ScheduledTask/MktData/cboesymboldir2.csv");

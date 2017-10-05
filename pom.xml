@@ -31,11 +31,29 @@
       <groupId>org.eclipse.microprofile.config</groupId>
       <artifactId>microprofile-config-api</artifactId>
       <version>1.1</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.osgi</groupId>
+          <artifactId>org.osgi.annotation.versioning</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.apache.geronimo.config</groupId>
       <artifactId>geronimo-config-impl</artifactId>
       <version>1.0</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency> <!-- both app use DS so just put it here -->
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-api</artifactId>
+      <version>${deltaspike.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.deltaspike.core</groupId>
+      <artifactId>deltaspike-core-impl</artifactId>
+      <version>${deltaspike.version}</version>
       <scope>runtime</scope>
     </dependency>
 
@@ -73,6 +91,12 @@
           <version>7.0-1</version>
           <scope>provided</scope>
         </dependency>
+        <dependency>
+          <groupId>org.slf4j</groupId>
+          <artifactId>slf4j-api</artifactId>
+          <version>1.7.25</version>
+          <scope>provided</scope>
+        </dependency>
 
         <!-- pre JavaEE 8 / CDI 2.0, see ScopeActivator -->
         <dependency>
@@ -85,6 +109,12 @@
           <artifactId>deltaspike-cdictrl-owb</artifactId>
           <version>${deltaspike.version}</version>
           <scope>runtime</scope>
+          <exclusions>
+            <exclusion>
+              <groupId>org.apache.deltaspike.test</groupId>
+              <artifactId>test-utils</artifactId>
+            </exclusion>
+          </exclusions>
         </dependency>
 
         <dependency>
@@ -97,12 +127,31 @@
 
       <build>
         <plugins>
-          <plugin>
-            <groupId>org.apache.meecrowave</groupId>
-            <artifactId>meecrowave-maven-plugin</artifactId>
-            <version>${meecrowave.version}</version>
+          <plugin> <!-- alternatively you can use tomee-maven-plugin which is way more powerful but it forks an instance -->
+            <groupId>org.apache.tomee.maven</groupId>
+            <artifactId>tomee-embedded-maven-plugin</artifactId>
+            <version>${tomee.version}</version>
             <configuration>
               <webResourceCached>false</webResourceCached>
+              <singleClassLoader>true</singleClassLoader>
+              <classpathAsWar>true</classpathAsWar>
+            </configuration>
+            <dependencies> <!-- configuring as using tomee+ distribution -->
+              <dependency>
+                <groupId>org.apache.batchee</groupId>
+                <artifactId>batchee-jbatch</artifactId>
+                <version>${batchee.version}</version>
+              </dependency>
+            </dependencies>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.19.1</version>
+            <configuration>
+              <argLine>
+                "-javaagent:${settings.localRepository}/org/apache/tomee/openejb-javaagent/${tomee.version}/openejb-javaagent-${tomee.version}.jar"
+              </argLine>
             </configuration>
           </plugin>
         </plugins>
@@ -171,17 +220,6 @@
           <groupId>org.apache.deltaspike.modules</groupId>
           <artifactId>deltaspike-scheduler-module-api</artifactId>
           <version>${deltaspike.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.deltaspike.core</groupId>
-          <artifactId>deltaspike-core-api</artifactId>
-          <version>${deltaspike.version}</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.deltaspike.core</groupId>
-          <artifactId>deltaspike-core-impl</artifactId>
-          <version>${deltaspike.version}</version>
-          <scope>runtime</scope>
         </dependency>
         <dependency>
           <groupId>org.apache.deltaspike.modules</groupId>
@@ -261,6 +299,14 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.1.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.19.1</version>
+        <configuration>
+          <trimStackTrace>false</trimStackTrace>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
