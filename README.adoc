@@ -1,0 +1,36 @@
+= Goal
+
+- Integrate quote prices into a database (hslqdb or h2) thanks to a small (j)batch
+- Expose these quote data through a JAX-RS service
+
+= Setup
+
+1. Configuration will use link:https://github.com/eclipse/microprofile-config[Microprofile Config]
+2. Server will be either link:http://openwebbeans.apache.org/meecrowave/[Meecrowave] with link:https://deltaspike.apache.org/[DeltaSpike] for scheduling and JPA integration
+or link:http://tomee.apache.org/[TomEE]
+
+= Batch
+
+You can grab the CSV at of link:http://www.cboe.com/publish/ScheduledTask/MktData/cboesymboldir2.csv[CBOE] to get a list of quote symbols
+then you parse it to extract the symbol and can request the price at link:https://query1.finance.yahoo.com/v10/finance/quoteSummary/{symbol}?modules=financialData[Yahoo].
+
+For the persistence just use JPA - or if you prefer a NoSQL database but you will not get any "solution" ;)).
+
+Then expose the data through a list endpoint (paginated) and a `findBySymbol` one.
+
+= Tips
+
+- For the HTTP clients use JAX-RS `Client`
+- For the batch you can do a simple `chunk` (read symbols -> convert them in symbol/price pairs -> persist them)
+- For Meecrowave/JPA integration either use `meecrowave-jpa` or `deltaspike-jpa`
+- TomEE and meecrowave have maven plugin to ease the development and "manual" testing
+- TomEE and meecrowave (+ BatchEE) have JUnit integrations so no excuse to not test
+
+= If you are really (really) fast
+
+- Develop a UI to visualize price as graphs
+- Prod oriented deployment (war + enriching of the container with logging, tracing etc)
+- Zipkin
+- Swagger
+- JAX-RS-Analyzer
+- ...
